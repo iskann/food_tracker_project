@@ -10,6 +10,18 @@
 
 
 {% block card_day %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col">
+        <div class="card h-100 text-center">
+            <img src="{{ url_for('static', filename='img/sample.jpg') }}" class="card-img-top" alt="">
+            <div class="card-body">
+                <h5 class="card-title">йцу</h5>
+                <p class="card-text">фыв</p>
+                <p class="fw-bold">фыв</p>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for c in categories %}
         <div class="col">
@@ -27,16 +39,5 @@
     {% endblock %}
 
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  <div class="col">
-    <div class="card h-100 text-center">
-      <img src="{{ url_for('static', filename='img/sample.jpg') }}" class="card-img-top" alt="">
-      <div class="card-body">
-        <h5 class="card-title">йцу</h5>
-        <p class="card-text">фыв</p>
-        <p class="fw-bold">фыв</p>
-      </div>
-    </div>
-  </div>
-</div>
+
 {% endblock %}

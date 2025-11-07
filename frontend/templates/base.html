@@ -21,10 +21,11 @@
     <h1 class="fs-4 text-center m-0 store-name">шатапчикен</h1>
 
     <!-- Поиск -->
-    <form class="d-flex" role="search">
-      <input class="form-control me-2" type="search" placeholder="Поиск товаров..." aria-label="Search">
-      <button class="btn btn-primary" type="submit">Найти</button>
-    </form>
+      <form class="d-flex" role="search" action="{{ url_for('search_.search_page') }}" method="get">
+          <input class="form-control me-2" name="query" type="search" placeholder="Поиск товаров..."
+                 aria-label="Search">
+          <button class="btn btn-primary" type="submit">Найти</button>
+      </form>
   </div>
 </header>
 

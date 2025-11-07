@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Результаты поиска{% endblock %}
+{% block name_page %}Результаты поиска{% endblock %}
+{% block content %}
+
+{% if query %}
+  <p>Результаты для запроса: <b>{{ query }}</b></p>
+
+  {% if results %}
+    <ul class="list-group">
+      {% for product in results %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ product.name }}
+          <span class="badge bg-primary rounded-pill">{{ product.price }} ₽ — {{ product.store.name }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Ничего не найдено</p>
+  {% endif %}
+{% else %}
+  <p>Введите запрос для поиска.</p>
+{% endif %}
+
+{% endblock %}

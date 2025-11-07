@@ -8,7 +8,6 @@ def index():
 
 @main.route('/categories')
 def categories():
-    # Пример данных категорий
     categories = [
         {'id': 1, 'name': 'Хлеб', 'image': 'img/хлеб.jpg'},
     ]
@@ -16,7 +15,6 @@ def categories():
 
 @main.route('/category/<int:category_id>')
 def category(category_id):
-    # Примерная категория и товары
     categories = {
         1: {'name': 'Хлеб', 'products': [
             {'name': 'ООУУКЕЙ батон', 'prices': [{'store': {'name': 'доставка'}, 'price': 125}]},
