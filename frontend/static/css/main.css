@@ -1,0 +1,44 @@
+/* Сброс и базовые стили */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+html, body {
+  height: 100%;
+}
+
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Контент растягивается, чтобы футер прижимался вниз */
+main {
+  flex: 1;
+}
+
+
+.store-name {
+  font-weight: 600;
+  color: #007bff;
+}
+
+header {
+  z-index: 1000;
+}
+
+.card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  background-color: #f8f9fa;
+}
