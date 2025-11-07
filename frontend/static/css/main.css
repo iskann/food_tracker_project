@@ -5,12 +5,12 @@
   box-sizing: border-box;
 }
 
-/* Растяжение страницы на всю высоту */
+
 html, body {
   height: 100%;
 }
 
-/* Контейнер для всей страницы */
+
 body {
   display: flex;
   flex-direction: column;
@@ -22,7 +22,7 @@ main {
   flex: 1;
 }
 
-/* Дополнительные стили */
+
 .store-name {
   font-weight: 600;
   color: #007bff;

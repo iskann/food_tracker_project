@@ -1,9 +1,20 @@
 {% extends 'base.html' %}
-
-{% block title %}
-Категории
-{% endblock %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block name_page %}{{ category.name }}{% endblock %}
 
 {% block content %}
-
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for product in products %}
+  <div class="col">
+    <div class="card h-100 text-center">
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        {% for price in product.prices %}
+          <p>{{ price.store.name }}: {{ price.price }} ₽</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}

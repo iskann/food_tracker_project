@@ -12,12 +12,9 @@
 
 <header class="py-3 border-bottom bg-light shadow-sm sticky-top">
   <div class="container d-flex align-items-center justify-content-between">
-    <!-- Категории -->
     <ul class="nav">
-      <li class="nav-item"><a href="{{url_for('index')}}" class="nav-link text-dark">Главная</a></li>
-      <li class="nav-item"><a href="{{url_for('category')}}" class="nav-link text-dark">Категории</a></li>
-
-
+      <li class="nav-item"><a href="{{url_for('main.index')}}" class="nav-link text-dark">Главная</a></li>
+      <li class="nav-item"><a href="{{url_for('main.categories')}}" class="nav-link text-dark">Категории</a></li>
     </ul>
 
     <!-- Название -->
@@ -32,32 +29,17 @@
 </header>
 
 <main class="container py-5">
-  <h2 class="text-center mb-4">Товары дня</h2>
-
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    <!-- Карточки товаров -->
-    <div class="col">
-      <div class="card h-100 text-center">
-        <img src="{{ url_for('static', filename='') }}" class="card-img-top" alt="">
-        <div class="card-body">
-          <h5 class="card-title"></h5>
-          <p class="card-text"></p>
-          <p class="fw-bold"></p>
-          <button class="btn btn-success">Купить</button>
-        </div>
-      </div>
-    </div>
+  <h2 class="text-center mb-4">{% block name_page %}{% endblock %}</h2>
+  {% block card_day %}{% endblock %}
 
   {% block content %}{% endblock %}
-
 </main>
 
 <footer class="bg-light border-top py-3 mt-5">
   <div class="container d-flex justify-content-between align-items-center">
     <p class="mb-0 text-secondary">© москивичи 2025</p>
     <div>
-      <a href="#" class="text-secondary text-decoration-none me-3">Контакты</a>
-      <a href="#" class="text-secondary text-decoration-none">О нас</a>
+      <a href="{{url_for('main.about')}}" class="text-secondary text-decoration-none">О нас</a>
     </div>
   </div>
 </footer>
