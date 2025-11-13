@@ -4,17 +4,23 @@
 {% block name_page %}Категории{% endblock %}
 
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for c in categories %}
-  <div class="col">
-    <div class="card h-100 text-center">
-      <img src="{{ url_for('static', filename=c.image) }}" class="card-img-top" alt="{{ c.name }}">
-      <div class="card-body">
-        <h5 class="card-title">{{ c.name }}</h5>
-        <a href="{{ url_for('main.category', category_id=c.id) }}" class="btn btn-primary">Смотреть товары</a>
-      </div>
+<div class="cards_container">
+  {% for category in categories %}
+    <div class="card_day">
+      <h5 class="card_title">{{ category.name }}</h5>
+
+      {% if category.image %}
+        <img src="{{ url_for('static', filename=category.image) }}" class="card_img_center" alt="{{ category.name }}">
+      {% else %}
+        <img src="{{ url_for('static', filename='img/no_image.jpg') }}" class="card_img_center" alt="no image">
+      {% endif %}
+
+      <p>
+        <a href="{{ url_for('main.category', category_id=category.id) }}" class="card_link">
+          Смотреть товары →
+        </a>
+      </p>
     </div>
-  </div>
   {% endfor %}
 </div>
 {% endblock %}

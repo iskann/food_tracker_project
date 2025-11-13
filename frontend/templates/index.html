@@ -8,36 +8,27 @@
 Товары дня
 {% endblock %}
 
-
 {% block card_day %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    <div class="col">
-        <div class="card h-100 text-center">
-            <img src="{{ url_for('static', filename='img/sample.jpg') }}" class="card-img-top" alt="">
-            <div class="card-body">
-                <h5 class="card-title">йцу</h5>
-                <p class="card-text">фыв</p>
-                <p class="fw-bold">фыв</p>
-            </div>
-        </div>
+<div class="cards_container">
+  {% for card in cards %}
+    <div class="card_day">
+      <h5 class="card_title">{{ card.name }}</h5>
+
+      {% if card.category and card.category.image %}
+        <img src="{{ url_for('static', filename=card.category.image) }}" class="card_img_center" alt="{{ card.category.name }}">
+      {% else %}
+        <img src="{{ url_for('static', filename='img/no_image.jpg') }}" class="card_img_center" alt="no image">
+      {% endif %}
+
+      <p class="card_price">{{ card.price }}₽ — {{ card.store.name }}</p>
+
+
+      <p>
+        <a href="{{ url_for('main.category', category_id=card.category.id) }}" class="card_link">
+          Перейти в категорию
+        </a>
+      </p>
     </div>
+  {% endfor %}
 </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for c in categories %}
-        <div class="col">
-            <div class="card h-100 text-center">
-                <img src="{{ url_for('static', filename=c.image) }}" class="card-img-top" alt="{{ c.name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ c.name }}</h5>
-                    <a href="{{ url_for('main.category', category_id=c.id) }}" class="btn btn-primary">Смотреть
-                        товары</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endblock %}
-
-{% block content %}
-
 {% endblock %}

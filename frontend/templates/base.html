@@ -1,50 +1,43 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Магазин{% endblock %}</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Магазин{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
 
-<header class="py-3 border-bottom bg-light shadow-sm sticky-top">
-  <div class="container d-flex align-items-center justify-content-between">
+<header>
+    <h1 class="name_site">шатапчикен</h1>
+
     <ul class="nav">
-      <li class="nav-item"><a href="{{url_for('main.index')}}" class="nav-link text-dark">Главная</a></li>
-      <li class="nav-item"><a href="{{url_for('main.categories')}}" class="nav-link text-dark">Категории</a></li>
+        <li class="nav_link"><a href="{{url_for('main.index')}}">Главная</a></li>
+        <li class="nav_link"><a href="{{url_for('main.categories')}}">Категории</a></li>
     </ul>
 
-    <!-- Название -->
-    <h1 class="fs-4 text-center m-0 store-name">шатапчикен</h1>
-
-    <!-- Поиск -->
-      <form class="d-flex" role="search" action="{{ url_for('search_.search_page') }}" method="get">
-          <input class="form-control me-2" name="query" type="search" placeholder="Поиск товаров..."
-                 aria-label="Search">
-          <button class="btn btn-primary" type="submit">Найти</button>
-      </form>
-  </div>
+    <form class="search_btn" action="{{ url_for('search_.search_page') }}" method="get">
+        <input class="search_txt" name="query" type="search" placeholder="Поиск товаров...">
+        <button class="search_btn_btn" type="submit">Найти</button>
+    </form>
 </header>
 
-<main class="container py-5">
-  <h2 class="text-center mb-4">{% block name_page %}{% endblock %}</h2>
-  {% block card_day %}{% endblock %}
 
-  {% block content %}{% endblock %}
+<main>
+    <h2 class="name_page">{% block name_page %}{% endblock %}</h2>
+    {% block card_day %}{% endblock %}
+
+    {% block content %}{% endblock %}
 </main>
 
-<footer class="bg-light border-top py-3 mt-5">
-  <div class="container d-flex justify-content-between align-items-center">
-    <p class="mb-0 text-secondary">© москивичи 2025</p>
+<footer>
     <div>
-      <a href="{{url_for('main.about')}}" class="text-secondary text-decoration-none">О нас</a>
+        <p>© москивичи 2025</p>
+        <div>
+            <a href="{{url_for('main.about')}}" class="">О нас</a>
+        </div>
     </div>
-  </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
