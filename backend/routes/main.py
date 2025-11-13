@@ -1,14 +1,18 @@
 from flask import Blueprint, render_template, url_for
+from backend.models import Product, Category, Store
+from backend.extensions import db
+import random
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    products = Product.query.all()
+    random_cards = random.sample(products, min(len(products), 4))
+    return render_template('index.html', cards=random_cards)
 
 @main.route('/categories')
 def categories():
-    # Пример данных категорий
     categories = [
         {'id': 1, 'name': 'Хлеб', 'image': 'img/хлеб.jpg'},
     ]
@@ -16,7 +20,6 @@ def categories():
 
 @main.route('/category/<int:category_id>')
 def category(category_id):
-    # Примерная категория и товары
     categories = {
         1: {'name': 'Хлеб', 'products': [
             {'name': 'ООУУКЕЙ батон', 'prices': [{'store': {'name': 'доставка'}, 'price': 125}]},

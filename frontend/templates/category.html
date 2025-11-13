@@ -3,18 +3,27 @@
 {% block name_page %}{{ category.name }}{% endblock %}
 
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for product in products %}
-  <div class="col">
-    <div class="card h-100 text-center">
-      <div class="card-body">
-        <h5 class="card-title">{{ product.name }}</h5>
-        {% for price in product.prices %}
-          <p>{{ price.store.name }}: {{ price.price }} ₽</p>
-        {% endfor %}
+<div class="category-list">
+  {% if products %}
+    {% for product in products %}
+      <div class="category-item">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-stores">
+          {% if product.prices %}
+            {% for price in product.prices %}
+              <span class="store-price">
+                {{ price.store.name }} — <b>{{ price.price }} ₽</b>
+              </span>
+              {% if not loop.last %}<span class="divider">|</span>{% endif %}
+            {% endfor %}
+          {% else %}
+            <span class="no-price">Нет данных о ценах</span>
+          {% endif %}
+        </div>
       </div>
-    </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
+  {% else %}
+    <p class="no-products">Товары в этой категории не найдены.</p>
+  {% endif %}
 </div>
 {% endblock %}
