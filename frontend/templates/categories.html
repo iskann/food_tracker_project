@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Категории{% endblock %}
+{% block name_page %}Категории{% endblock %}
+
+{% block content %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for c in categories %}
+  <div class="col">
+    <div class="card h-100 text-center">
+      <img src="{{ url_for('static', filename=c.image) }}" class="card-img-top" alt="{{ c.name }}">
+      <div class="card-body">
+        <h5 class="card-title">{{ c.name }}</h5>
+        <a href="{{ url_for('main.category', category_id=c.id) }}" class="btn btn-primary">Смотреть товары</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
