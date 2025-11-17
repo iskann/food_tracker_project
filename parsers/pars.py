@@ -6,14 +6,14 @@ import time
 import sqlite3
 import random
 import sys
-
+import os
 # Установим лимит рекурсии
 sys.setrecursionlimit(2000)
 
 # Имя файла базы данных SQLite
 DB_NAME = 'okey_products.db'
 
-
+print("📌 Путь к базе данных:", os.path.abspath(DB_NAME))
 # --- Инициализация базы данных ---
 
 def initialize_db():
@@ -115,14 +115,17 @@ def parse_products_on_page(driver, category_name):
             price_input_element = product.find_element(
                 By.CSS_SELECTOR, 'input[type="hidden"][id^="ProductInfoPrice_"]'
             )
-            price = price_input_element.get_attribute('value').strip().replace(' ', '')
-            price_cleaned = price.replace(' ', '').replace('₽', '')
-            price_final = price_cleaned.replace(',', '.')
+            price_raw = price_input_element.get_attribute('value')
+            print(f"Начальный вид {price_raw}")
+            price = price_raw.replace('\u00A0', '').replace(' ', '').replace('\u2009', '')
+            price = price.replace('₽', '').replace(',', '.').strip()
+            print(f"ИТОГОВЫЙ ВИД {price}")
+
             # Преобразуем цену в число с плавающей точкой
             try:
-                price_float = float(price_final[:-1])
+                price_float = float(price)
             except ValueError:
-                print(f"        {j + 1}. Ошибка: Не удалось преобразовать цену '{price}' в число. Пропускаю товар.")
+                print(f"        {j + 1}. Ошибка: Не удалось преобразовать цену '{price_raw}' в число. Пропускаю товар.")
                 continue
 
             products_to_insert.append((category_name, name, price_float, product_url, 'okey'))
@@ -135,12 +138,14 @@ def parse_products_on_page(driver, category_name):
     # Массовая вставка данных в БД
     if products_to_insert:
         try:
+            before = conn.total_changes
             # Используем INSERT OR IGNORE для пропуска товаров, если их URL уже есть в БД
             cursor.executemany(
                 '''INSERT OR IGNORE INTO okey_products (category, name, price, url, shop) 
                    VALUES (?, ?, ?, ?, ?)''', products_to_insert)
             conn.commit()
-            print(f"    Успешно записано {cursor.rowcount} новых товаров в SQLite.")
+            inserted = conn.total_changes - before
+            print(f"    Успешно записано {inserted} новых товаров в SQLite.")
         except Exception as e:
             print(f"    Ошибка при записи в SQLite: {e}")
 
