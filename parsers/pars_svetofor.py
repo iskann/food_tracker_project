@@ -83,5 +83,5 @@ for cat in category_links:
         url = base_url + link_tag["href"] if link_tag else ""
         products_to_save.append((cat_name, name, price, url, "svetofor"))
         print((cat_name, name, price, url, "svetofor"))
-    save_products(products_to_save)t
+    save_products(products_to_save)
 
