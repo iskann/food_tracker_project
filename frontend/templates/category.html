@@ -3,27 +3,94 @@
 {% block name_page %}{{ category.name }}{% endblock %}
 
 {% block content %}
+
 <div class="category-list">
-  {% if products %}
-    {% for product in products %}
-      <div class="category-item">
-        <div class="product-name">{{ product.name }}</div>
-        <div class="product-stores">
-          {% if product.prices %}
-            {% for price in product.prices %}
-              <span class="store-price">
-                {{ price.store.name }} — <b>{{ price.price }} ₽</b>
-              </span>
-              {% if not loop.last %}<span class="divider">|</span>{% endif %}
-            {% endfor %}
-          {% else %}
-            <span class="no-price">Нет данных о ценах</span>
-          {% endif %}
-        </div>
-      </div>
-    {% endfor %}
-  {% else %}
+  {% set has_any = (in_both and in_both|length) or (similar_groups and similar_groups|length) or (unique_products and unique_products|length) %}
+
+  {% if not has_any %}
     <p class="no-products">Товары в этой категории не найдены.</p>
+  {% else %}
+
+    {# 1. Товары, которые есть в обоих магазинах #}
+    {% if in_both and in_both|length %}
+      <section class="category-section">
+        <h3>Есть в обоих магазинах</h3>
+        {% for group in in_both %}
+          <div class="category-item">
+            <div class="product-name">{{ group.name }}</div>
+            <div class="product-stores">
+              {% for product in group.products %}
+                <span class="store-price">
+                  {{ product.store.name }} — <b>{{ product.price }} ₽</b>
+                </span>
+                {% if not loop.last %}<span class="divider">|</span>{% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    {# 2. Похожие товары - отдельные блоки для каждой группы #}
+    {% if similar_groups and similar_groups|length %}
+      <section class="category-section">
+        <h3>Похожие товары</h3>
+        {% for group in similar_groups %}
+          <div class="similar-group-block">
+            <h4 class="similar-group-title">{{ group.name }}</h4>
+            <div class="similar-group-products">
+              {% if group.products_by_store %}
+                {% for store_name, products in group.products_by_store.items() %}
+                  <div class="store-group">
+                    <span class="store-label">{{ store_name }}:</span>
+                    <div class="products-list">
+                      {% for product in products %}
+                        <div class="product-item">
+                          <span class="product-item-name">{{ product.name }}</span>
+                          <span class="product-item-price"><b>{{ product.price }} ₽</b></span>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                {# Fallback на старый формат, если products_by_store нет #}
+                {% for product in group.products %}
+                  <div class="store-group">
+                    <span class="store-label">{{ product.store.name }}:</span>
+                    <div class="products-list">
+                      <div class="product-item">
+                        <span class="product-item-name">{{ product.name }}</span>
+                        <span class="product-item-price"><b>{{ product.price }} ₽</b></span>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    {# 3. Уникальные товары #}
+    {% if unique_products and unique_products|length %}
+      <section class="category-section">
+        <h3>Уникальные товары</h3>
+        {% for product in unique_products %}
+          <div class="category-item">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-stores">
+              <span class="store-price">
+                {{ product.store.name }} — <b>{{ product.price }} ₽</b>
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
   {% endif %}
 </div>
+
 {% endblock %}
