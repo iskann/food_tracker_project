@@ -8,9 +8,12 @@ search_ = (Blueprint('search_', __name__))
 def search_page():
     query = request.args.get('query', '').strip()
     results = []
+    
+    # ищем товары по подстроке в названии (без учёта регистра)
     if query:
         query_lower = query.lower()
         results = Product.query.filter(
             func.lower(Product.name).like(f"%{query_lower}%")
         ).all()
+    
     return render_template('results.html', query=query, results=results)

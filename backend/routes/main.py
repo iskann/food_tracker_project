@@ -60,12 +60,13 @@ def category(category_id):
     category_obj = Category.query.get_or_404(category_id)
     products = Product.query.filter_by(category_id=category_id).all()
 
-    # группируем товары, которые есть в обоих магазинах
+    # группируем товары по нормализованному названию
     by_norm = {}
     for p in products:
         key = _normalize_product_name(p.name)
         by_norm.setdefault(key, []).append(p)
 
+    # разделяем на товары в обоих магазинах и остальные
     in_both = []
     remaining = []
 
@@ -76,11 +77,11 @@ def category(category_id):
         else:
             remaining.extend(plist)
 
-    # группируем похожие товары
+    # ищем похожие товары среди оставшихся
     similar_groups = []
     used_ids = set()
 
-    threshold_min = 50
+    threshold_min = 60
     threshold_max = 95
     
     remaining_sorted = sorted(remaining, key=lambda p: _normalize_product_name(p.name))
@@ -92,6 +93,7 @@ def category(category_id):
         group = [p1]
         group_normalized = _normalize_product_name(p1.name)
         
+        # ищем похожие товары по метрике схожести
         for p2 in remaining_sorted[i + 1:]:
             if p2.id in used_ids:
                 continue
@@ -105,6 +107,7 @@ def category(category_id):
                 if len(p2_normalized) < len(group_normalized):
                     group_normalized = p2_normalized
         
+        # если нашли похожие, группируем по магазинам
         if len(group) > 1:
             products_by_store = {}
             for p in group:
@@ -123,6 +126,7 @@ def category(category_id):
             for p in group:
                 used_ids.add(p.id)
 
+    # оставшиеся уникальные товары
     unique_products = [p for p in remaining if p.id not in used_ids]
 
     return render_template(

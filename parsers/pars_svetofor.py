@@ -54,24 +54,27 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 }
 
-# Шаг 1. Получить категории
+# получаем список всех категорий с главной страницы каталога
 response = requests.get(catalog_url, headers=headers)
 soup = BeautifulSoup(response.text, "lxml")
 categories_block = soup.find('div', class_='section-links__list')
 category_links = categories_block.find_all('a', href=True)
 
+# обходим каждую категорию и парсим товары
 for cat in category_links:
     cat_name = cat.get_text(strip=True)
     cat_url = base_url + cat['href']
     print(f"\n--- Категория: {cat_name} ---")
-    # Шаг 2. Загрузить страницу категории
+    
+    # загружаем страницу категории
     response_cat = requests.get(cat_url, headers=headers)
     soup_cat = BeautifulSoup(response_cat.text, "lxml")
     products_container = soup_cat.find("div", class_="cards__list")
     if not products_container:
         print("Нет товаров в этой категории.")
         continue
-    # Шаг 3. Перебрать все карточки товаров
+    
+    # извлекаем данные из карточек товаров
     products_to_save = []
     cards = products_container.find_all("div", class_="card")
     for card in cards:
@@ -83,5 +86,7 @@ for cat in category_links:
         url = base_url + link_tag["href"] if link_tag else ""
         products_to_save.append((cat_name, name, price, url, "svetofor"))
         print((cat_name, name, price, url, "svetofor"))
+    
+    # сохраняем все товары категории в БД
     save_products(products_to_save)
 

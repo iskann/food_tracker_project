@@ -40,14 +40,17 @@ def _normalize_category(name: str) -> str:
 
 
 def merge_databases():
-    """объединяет данные из парсерных БД в основную БД приложения"""
+    """объединяет данные из парсерных БД в основную БД"""
+    # удаляем старую БД перед созданием новой
     if os.path.exists(MAIN_DB_PATH):
         os.remove(MAIN_DB_PATH)
         print(f"🗑 Удалена старая основная БД: {MAIN_DB_PATH}")
 
+    # читаем сырые данные из парсерных БД
     okey_rows_raw = _read_products(OKEY_DB_PATH, "okey_products")
     svetofor_rows_raw = _read_products(SVETOFOR_DB_PATH, "svetofor_products")
 
+    # преобразуем строки в словари с нормализованными категориями
     def _to_dicts(rows):
         return [
             {
@@ -64,30 +67,11 @@ def merge_databases():
     okey_rows = _to_dicts(okey_rows_raw)
     svetofor_rows = _to_dicts(svetofor_rows_raw)
 
+    # собираем уникальные нормализованные категории
     okey_categories_norm_raw = sorted({row["category_norm"] for row in okey_rows if row["category_norm"]})
     svetofor_categories_norm = sorted({row["category_norm"] for row in svetofor_rows if row["category_norm"]})
 
-    INCOMPATIBLE_GROUPS = {
-        "аптека": ["чай", "кофе", "напитки", "овощи", "фрукты", "молочные", "мясо", "рыба", "хлеб", "бакалея"],
-        "лекарства": ["чай", "кофе", "напитки", "овощи", "фрукты", "молочные", "мясо", "рыба", "хлеб", "бакалея"],
-        "медицина": ["чай", "кофе", "напитки", "овощи", "фрукты", "молочные", "мясо", "рыба", "хлеб", "бакалея"],
-    }
-    
-    def _are_categories_compatible(cat1: str, cat2: str) -> bool:
-        """проверяет, совместимы ли две категории для объединения"""
-        cat1_words = set(cat1.split())
-        cat2_words = set(cat2.split())
-        
-        for incompatible_word, incompatible_list in INCOMPATIBLE_GROUPS.items():
-            if incompatible_word in cat1_words:
-                if cat2_words & set(incompatible_list):
-                    return False
-            if incompatible_word in cat2_words:
-                if cat1_words & set(incompatible_list):
-                    return False
-        
-        return True
-    
+    # вычисляем похожесть категорий через несколько алгоритмов
     def _calculate_category_similarity(cat1: str, cat2: str) -> float:
         """вычисляет похожесть двух категорий"""
         scores = [
@@ -99,20 +83,19 @@ def merge_databases():
         ]
         return max(scores)
     
+    # убираем дубликаты категорий Окея
     okey_categories_norm = sorted(set(okey_categories_norm_raw))
     
     print(f"Уникальных нормализованных категорий Окей (до объединения): {len(okey_categories_norm_raw)}")
     print(f"Уникальных нормализованных категорий Окей (после объединения одинаковых): {len(okey_categories_norm)}")
     
+    # сопоставляем категории Светофора с категориями Окея
     category_mapping = {}
-    
+
     for svetofor_norm in svetofor_categories_norm:
         best_match = None
         best_score = 0
         for okey_norm in okey_categories_norm:
-            if not _are_categories_compatible(svetofor_norm, okey_norm):
-                continue
-            
             score = _calculate_category_similarity(svetofor_norm, okey_norm)
             if score > best_score:
                 best_score = score
@@ -122,10 +105,12 @@ def merge_databases():
         else:
             category_mapping[svetofor_norm] = svetofor_norm
 
+    # обновляем нормализованные категории в данных Светофора
     for row in svetofor_rows:
         if row["category_norm"] in category_mapping:
             row["category_norm"] = category_mapping[row["category_norm"]]
 
+    # собираем итоговый список всех категорий
     all_categories_norm = set(okey_categories_norm) | set(category_mapping.values())
 
     print(f"Уникальных нормализованных категорий Окей: {len(okey_categories_norm)}")
@@ -139,12 +124,14 @@ def merge_databases():
     with app.app_context():
         db.create_all()
 
+        # создаём магазины в БД
         store_map = {}
         for code, display_name in (("okey", "Окей"), ("svetofor", "Светофор")):
             store = Store(name=display_name)
             db.session.add(store)
             store_map[code] = store
 
+        # выбираем название категории из исходных данных
         def _display_name_for(norm_name: str) -> str:
             for row in svetofor_rows:
                 if row["category_norm"] == norm_name and row["raw_category"]:
@@ -154,6 +141,7 @@ def merge_databases():
                     return row["raw_category"]
             return norm_name.title()
 
+        # создаём категории в БД
         category_map = {}
         for norm_name in sorted(all_categories_norm):
             display_name = _display_name_for(norm_name)
@@ -163,6 +151,7 @@ def merge_databases():
 
         db.session.commit()
 
+        # добавляем товары в БД с проверкой валидности данных
         def _add_products(rows):
             for row in rows:
                 norm_cat = row["category_norm"]
@@ -194,7 +183,7 @@ def merge_databases():
         _add_products(svetofor_rows)
 
         db.session.commit()
-        print("✅ Данные из парсеров успешно загружены в основную БД.")
+        print("Данные из парсеров успешно загружены в основную БД")
 
 
 if __name__ == "__main__":
